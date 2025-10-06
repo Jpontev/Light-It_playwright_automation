@@ -1,377 +1,228 @@
 # Light-It Playwright Automation Framework
 
-Este proyecto contiene un framework de automatización de pruebas completo utilizando Playwright con TypeScript, siguiendo las mejores prácticas y el patrón de diseño Page Object Model (POM).
+## ❓ Questions & Answers
 
-## 🚀 Características
+**a. Why did you choose them?**
+Because they cover the business-critical flows: being able to log in, add a product to the cart, and complete a purchase.
 
-- **Playwright** con TypeScript para pruebas robustas y confiables
-- **Page Object Model (POM)** para mantener el código organizado y reutilizable
-- **Configuración de entorno** flexible para diferentes ambientes
-- **Funciones comunes** para operaciones repetitivas
-- **Templates de pruebas** listos para usar
-- **Soporte multi-navegador** (Chrome, Firefox, Safari)
-- **Soporte multi-dispositivo** (Desktop, Tablet, Mobile)
-- **Reportes HTML** detallados con screenshots y videos
-- **Integración CI/CD** lista
+**b. What validations would you include in each?**
+Visualization checks and value matching against expected results were added, but the validations could be made more robust by ensuring each object has a unique ID and follows a specific format.
 
-## 📁 Estructura del Proyecto
+---
 
-```
-├── src/
-│   ├── config/           # Configuración de entorno
-│   │   └── environment.ts
-│   ├── pages/            # Page Objects (POM)
-│   │   ├── BasePage.ts
-│   │   └── HomePage.ts
-│   ├── tests/            # Archivos de pruebas
-│   │   └── example.spec.ts
-│   ├── utils/            # Funciones comunes
-│   │   └── common.ts
-│   └── fixtures/         # Datos de prueba
-│       └── testData.ts
-├── test-results/         # Resultados de pruebas
-├── playwright.config.ts  # Configuración de Playwright
-├── tsconfig.json         # Configuración de TypeScript
-└── package.json          # Dependencias y scripts
-```
+## 🛑 Problems, Errors, and Blockers Encountered
 
-## 🛠️ Instalación
+The main challenge was creating the locators. Some elements had a field similar to `data-test`, others had `id` but it wasn’t unique, and the same issue appeared with `class` attributes. Because of that, I had to use different methods to define the elements within the locators.
 
-### Prerrequisitos
+Another problem appeared when re-running the test for adding a product to the cart. Since more than one product was present, the locator broke. I solved this by searching based on the product text that had been previously added.
 
-- Node.js (versión 16 o superior)
-- npm o yarn
-- Git
+---
 
-### Pasos de Instalación
+## 🚀 Features
 
-1. **Clonar el repositorio:**
+* **Playwright** with TypeScript for robust and reliable testing
+* **Page Object Model (POM)** to keep code organized and reusable
+* **Flexible environment configuration** for different setups
+* **Common functions** for repetitive operations
+* **Ready-to-use test templates**
+* **Multi-browser support** (Chrome, Firefox, Safari)
+* **Multi-device support** (Desktop, Tablet, Mobile)
+* **Detailed HTML reports** with screenshots and videos
+* **CI/CD integration** ready
+
+## 🛠️ Installation
+
+### Prerequisites
+
+* Node.js (version 16 or higher)
+* npm or yarn
+* Git
+
+### Installation Steps
+
+1. **Clone the repository:**
+
    ```bash
    git clone <repository-url>
    cd Light-It_playwright_automation
    ```
 
-2. **Instalar dependencias:**
+2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
-3. **Instalar navegadores de Playwright:**
+3. **Install Playwright browsers:**
+
    ```bash
-   npm run test:install
+   npm run test --install
    ```
 
-4. **Configurar variables de entorno:**
+4. **Configure environment variables:**
+
    ```bash
    cp .env.example .env
    ```
-   
-   Edita el archivo `.env` con tus configuraciones específicas.
 
-## 🎯 Comandos Disponibles
+   Edit the `.env` file with your specific settings.
 
-### Ejecución de Pruebas
+## 🎯 Available Commands
+
+### Test Execution
 
 ```bash
-# Ejecutar todas las pruebas
+# Run all tests
 npm test
 
-# Ejecutar pruebas en modo headed (con interfaz gráfica)
-npm run test:headed
+# Run tests in headed mode (with UI)
+npm run test --headed
 
-# Ejecutar pruebas con interfaz de usuario de Playwright
-npm run test:ui
+# Run tests with Playwright UI
+npm run test --ui
 
-# Ejecutar pruebas en modo debug
-npm run test:debug
+# Run tests in debug mode
+npm run test --debug
 
-# Mostrar reporte de pruebas
-npm run test:report
+# Show test report
+npm run test --report
 
-# Generar código de prueba automáticamente
-npm run test:codegen
+# Generate test code automatically
+npm run test --codegen
 ```
 
-### Ejecución Específica
+### Specific Execution
 
 ```bash
-# Ejecutar pruebas específicas
+# Run specific tests
 npx playwright test src/tests/example.spec.ts
 
-# Ejecutar pruebas en un navegador específico
+# Run tests in a specific browser
 npx playwright test --project=chromium
 
-# Ejecutar pruebas en modo paralelo
+# Run tests in parallel
 npx playwright test --workers=4
 
-# Ejecutar pruebas con timeout personalizado
+# Run tests with custom timeout
 npx playwright test --timeout=60000
 ```
 
-## 📝 Configuración
+## 📝 Configuration
 
-### Variables de Entorno
+### Environment Variables
 
-El archivo `.env` contiene las siguientes configuraciones principales:
+The `.env` file contains the following main settings:
 
 ```env
-# URLs de la aplicación
+# Application URLs
 BASE_URL=http://localhost:3000
 API_URL=http://localhost:3000/api
 
-# Configuración de pruebas
+# Test configuration
 NODE_ENV=development
 TIMEOUT=30000
 HEADLESS=false
 
-# Credenciales de prueba
+# Test credentials
 TEST_USERNAME=testuser
 TEST_PASSWORD=testpass123
 ```
 
-### Configuración de Playwright
+### Playwright Configuration
 
-El archivo `playwright.config.ts` contiene la configuración principal:
+The `playwright.config.ts` file contains the main setup:
 
-- **Navegadores soportados:** Chrome, Firefox, Safari, Edge
-- **Dispositivos:** Desktop, Tablet, Mobile
-- **Reportes:** HTML, JSON, JUnit
-- **Screenshots y videos** en caso de fallos
-- **Traces** para debugging
+* **Supported browsers:** Chrome, Firefox, Safari, Edge
+* **Devices:** Desktop, Tablet, Mobile
+* **Reports:** HTML, JSON, JUnit
+* **Screenshots and videos** on failures
+* **Traces** for debugging
 
-## 🏗️ Desarrollo de Pruebas
+## 🔧 Useful Git Commands
 
-### Crear una Nueva Página (Page Object)
-
-1. **Crear archivo en `src/pages/`:**
-   ```typescript
-   import { Page } from '@playwright/test';
-   import { BasePage } from './BasePage';
-
-   export class LoginPage extends BasePage {
-     private readonly locators = {
-       usernameInput: '#username',
-       passwordInput: '#password',
-       loginButton: '#login-button',
-     };
-
-     constructor(page: Page) {
-       super(page);
-     }
-
-     async login(username: string, password: string): Promise<void> {
-       await this.fillInput(this.locators.usernameInput, username);
-       await this.fillInput(this.locators.passwordInput, password);
-       await this.clickElement(this.locators.loginButton);
-     }
-   }
-   ```
-
-2. **Implementar métodos abstractos:**
-   ```typescript
-   getLocators(): Record<string, string> {
-     return this.locators;
-   }
-
-   async verifyPageLoaded(): Promise<void> {
-     await this.waitForElement(this.locators.usernameInput);
-   }
-   ```
-
-### Crear una Nueva Prueba
-
-1. **Crear archivo en `src/tests/`:**
-   ```typescript
-   import { test, expect } from '@playwright/test';
-   import { LoginPage } from '../pages/LoginPage';
-
-   test.describe('Login Tests', () => {
-     test('should login successfully', async ({ page }) => {
-       const loginPage = new LoginPage(page);
-       await loginPage.navigateTo('/login');
-       await loginPage.login('testuser', 'testpass');
-       // Verificaciones...
-     });
-   });
-   ```
-
-### Usar Funciones Comunes
-
-```typescript
-import { 
-  waitForElementToBeVisible, 
-  safeClick, 
-  generateRandomEmail 
-} from '../utils/common';
-
-// Esperar elemento visible
-await waitForElementToBeVisible(page, '#my-element');
-
-// Click seguro con reintentos
-await safeClick(page, '#my-button');
-
-// Generar datos aleatorios
-const email = generateRandomEmail();
-```
-
-## 🔧 Comandos Git Útiles
-
-### Configuración Inicial
+### Initial Setup
 
 ```bash
-# Configurar usuario
-git config --global user.name "Tu Nombre"
-git config --global user.email "tu.email@ejemplo.com"
+# Set username
+git config --global user.name "Your Name"
 
-# Configurar editor
+# Set email
+git config --global user.email "your.email@example.com"
+
+# Set editor
 git config --global core.editor "code --wait"
 ```
 
-### Flujo de Trabajo
+### Workflow
 
 ```bash
-# Crear nueva rama
-git checkout -b feature/nueva-funcionalidad
+# Create new branch
+git checkout -b feature/new-feature
 
-# Agregar cambios
+# Add changes
 git add .
 
-# Commit con mensaje descriptivo
-git commit -m "feat: agregar pruebas de login"
+# Commit with descriptive message
+git commit -m "feat: add login tests"
 
-# Push a rama remota
-git push origin feature/nueva-funcionalidad
+# Push to remote branch
+git push origin feature/new-feature
 
-# Crear Pull Request (desde GitHub/GitLab)
+# Create Pull Request (from GitHub/GitLab)
 ```
 
-### Comandos Útiles
+### Other Useful Commands
 
 ```bash
-# Ver estado del repositorio
+# Check repository status
 git status
 
-# Ver historial de commits
+# View commit history
 git log --oneline
 
-# Ver diferencias
+# View differences
 git diff
 
-# Deshacer último commit (mantener cambios)
+# Undo last commit (keep changes)
 git reset --soft HEAD~1
 
-# Deshacer cambios en archivo específico
-git checkout -- archivo.txt
+# Undo changes in a specific file
+git checkout -- file.txt
 
-# Ver ramas
+# List branches
 git branch -a
 
-# Cambiar a rama
-git checkout nombre-rama
+# Switch to branch
+git checkout branch-name
 
-# Fusionar rama
-git merge nombre-rama
+# Merge branch
+git merge branch-name
 
-# Eliminar rama local
-git branch -d nombre-rama
+# Delete local branch
+git branch -d branch-name
 ```
 
-## 📊 Reportes
+## 📊 Reports
 
-### Reporte HTML
+### HTML Report
 
-Después de ejecutar las pruebas, puedes ver el reporte HTML:
+After running the tests, you can view the HTML report:
 
 ```bash
 npm run test:report
 ```
 
-El reporte incluye:
-- ✅ Resumen de pruebas ejecutadas
-- 📸 Screenshots de fallos
-- 🎥 Videos de ejecución
-- 📈 Métricas de rendimiento
-- 🔍 Traces para debugging
+The report includes:
 
-### Reportes en CI/CD
+* ✅ Summary of executed tests
+* 📸 Screenshots of failures
+* 🎥 Execution videos
+* 📈 Performance metrics
+* 🔍 Debugging traces
 
-El framework está configurado para generar reportes en formato:
-- **HTML:** Para visualización humana
-- **JSON:** Para integración con herramientas
-- **JUnit:** Para integración con CI/CD
+## 📚 Additional Resources
 
-## 🚀 Integración CI/CD
-
-### GitHub Actions
-
-Crea `.github/workflows/playwright.yml`:
-
-```yaml
-name: Playwright Tests
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npm test
-    - uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-```
-
-## 🐛 Debugging
-
-### Modo Debug
-
-```bash
-# Ejecutar en modo debug
-npm run test:debug
-
-# Ejecutar prueba específica en debug
-npx playwright test src/tests/example.spec.ts --debug
-```
-
-### Herramientas de Debug
-
-- **Playwright Inspector:** Para debugging interactivo
-- **Traces:** Para análisis detallado de ejecución
-- **Screenshots:** Capturadas automáticamente en fallos
-- **Videos:** Grabados en caso de fallos
-
-## 📚 Recursos Adicionales
-
-- [Documentación oficial de Playwright](https://playwright.dev/)
-- [Guía de TypeScript](https://www.typescriptlang.org/docs/)
-- [Mejores prácticas de testing](https://playwright.dev/docs/best-practices)
-- [Page Object Model](https://playwright.dev/docs/pom)
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia ISC.
-
-## 👥 Equipo
-
-Desarrollado para el desafío de Light-It utilizando las mejores prácticas de automatización de pruebas.
-
----
-
-**¡Happy Testing! 🎉**
+* [Playwright Official Docs](https://playwright.dev/)
+* [TypeScript Guide](https://www.typescriptlang.org/docs/)
+* [Testing Best Practices](https://playwright.dev/docs/best-practices)
+* [Page Object Model](https://playwright.dev/docs/pom)
