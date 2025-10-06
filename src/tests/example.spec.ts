@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { HomePage } from '../pages/HomePage';
+//import { HomePage } from '../pages/ExamplePage';
 import { ENV } from '../config/environment';
-import { logStep, logTestData } from '../utils/common';
+import { logStep } from '../utils/common';
 
 /**
  * Example Test Suite
@@ -14,7 +14,7 @@ const testData = {
   expectedTitle: 'Home Page',
   featureCardCount: 3,
 };
-
+/*
 // Test configuration
 test.describe.configure({ mode: 'parallel' });
 
@@ -163,7 +163,7 @@ test.describe('Home Page Error Handling', () => {
     logStep('Testing network error handling');
     
     // Simulate network failure
-    await page.route('**/*', route => route.abort());
+    await page.route('**', route => route.abort());
     
     // Try to perform an action that requires network
     await homePage.performSearch(testData.searchTerm);
@@ -249,3 +249,4 @@ test.describe('Home Page Performance', () => {
     expect(await homePage.isNavigationMenuVisible()).toBe(true);
   });
 });
+*/

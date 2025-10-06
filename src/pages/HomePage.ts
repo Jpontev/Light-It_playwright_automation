@@ -1,253 +1,96 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { expect, Page } from '@playwright/test';
+import { BasePage } from '../utils/common';
 import { logStep } from '../utils/common';
+import { ENV } from '@/config/environment';
+import { CartPage } from './CartPage';
+import { ProductPage } from './ProductPage';
 
-/**
- * Home Page Object Model
- * This is an example implementation of a page object following the POM pattern
- */
 export class HomePage extends BasePage {
-  // Page locators - define all selectors for this page
   private readonly locators = {
     // Header elements
-    logo: '[data-testid="logo"]',
-    navigationMenu: '[data-testid="navigation-menu"]',
-    searchInput: '[data-testid="search-input"]',
-    searchButton: '[data-testid="search-button"]',
-    
-    // Main content
-    heroSection: '[data-testid="hero-section"]',
-    heroTitle: '[data-testid="hero-title"]',
-    heroSubtitle: '[data-testid="hero-subtitle"]',
-    ctaButton: '[data-testid="cta-button"]',
-    
-    // Features section
-    featuresSection: '[data-testid="features-section"]',
-    featureCards: '[data-testid="feature-card"]',
-    
-    // Footer
-    footer: '[data-testid="footer"]',
-    footerLinks: '[data-testid="footer-link"]',
-    
-    // Common elements
-    loadingSpinner: '[data-testid="loading-spinner"]',
-    errorMessage: '[data-testid="error-message"]',
-    successMessage: '[data-testid="success-message"]',
+    button_SignUp: '[data-target="#signInModal"]',
+    button_LogIn: '[data-target="#logInModal"]',
+    button_Cart: '[id="cartur"]',
+    button_AboutUs: '[data-target="#videoModal"]',
+    button_Contact: '[data-target="#exampleModal"]',
+    button_Home: '[li[class="nav-item active"] a[class="nav-link"]]',
+    button_Username: '[id="nameofuser"]',
+
+    //LogIn modal
+    input_loginmodal_username: '[id="loginusername"]',
+    input_loginmodal_password: '[id="loginpassword"]',
+    button_loginmodal_LogIn: 'button[onclick="logIn()"]',
+
+    // Products
+    button_products: '#tbodyid .card-title a'
+  
   };
+
 
   constructor(page: Page) {
     super(page);
   }
 
-  /**
-   * Get all locators for this page
-   */
   getLocators(): Record<string, string> {
     return this.locators;
   }
 
-  /**
-   * Verify that the home page has loaded correctly
-   */
-  async verifyPageLoaded(): Promise<void> {
-    logStep('Verifying home page is loaded');
-    
-    // Wait for key elements to be visible
-    await this.waitForElement(this.locators.logo);
-    await this.waitForElement(this.locators.heroSection);
-    await this.waitForElement(this.locators.navigationMenu);
-    
-    // Verify page title
-    const title = await this.getTitle();
-    expect(title).toContain('Home'); // Adjust based on your actual page title
-    
-    logStep('Home page loaded successfully');
-  }
-
-  /**
-   * Navigate to home page
-   */
   async goToHomePage(): Promise<void> {
     logStep('Navigating to home page');
-    await this.navigateTo('/');
-    await this.verifyPageLoaded();
+    await this.navigateTo('/index.html');
   }
 
-  /**
-   * Perform search
-   */
-  async performSearch(searchTerm: string): Promise<void> {
-    logStep(`Performing search for: ${searchTerm}`);
-    
-    await this.fillInput(this.locators.searchInput, searchTerm);
-    await this.clickElement(this.locators.searchButton);
-    
-    // Wait for search results or navigation
-    await this.waitForNetworkIdle();
+  async clickLogInButton(): Promise<void> {
+    logStep('clicking LogIn button');
+    await this.clickElement(this.locators.button_LogIn);
   }
 
-  /**
-   * Click on CTA button
-   */
-  async clickCTAButton(): Promise<void> {
-    logStep('Clicking CTA button');
-    await this.clickElement(this.locators.ctaButton);
+  async fillLoginUsername(value: string): Promise<void> {
+    logStep(`filling field username from LogIn Modal`);
+    await this.fillInput(this.locators.input_loginmodal_username, value);
   }
 
-  /**
-   * Get hero section title
-   */
-  async getHeroTitle(): Promise<string> {
-    return await this.getElementText(this.locators.heroTitle);
+  async fillLoginPassword(value: string): Promise<void> {
+    logStep(`filling field password from LogIn Modal`);
+    await this.fillInput(this.locators.input_loginmodal_password, value);
   }
 
-  /**
-   * Get hero section subtitle
-   */
-  async getHeroSubtitle(): Promise<string> {
-    return await this.getElementText(this.locators.heroSubtitle);
+  async submitLoginModal(): Promise<void> {
+    logStep(`clicking LogIn button from LogIn Modal`);
+    await this.clickElement(this.locators.button_loginmodal_LogIn);
   }
 
-  /**
-   * Check if search input is visible
-   */
-  async isSearchInputVisible(): Promise<boolean> {
-    return await this.isElementVisible(this.locators.searchInput);
+  async validateLogIn(username: string): Promise<void> {
+    logStep(`clicking LogIn button from LogIn Modal`);
+    const usernameElement = this.page.locator(this.locators.button_Username);
+    await expect(usernameElement).toHaveText(`Welcome ${username}`);
   }
 
-  /**
-   * Check if navigation menu is visible
-   */
-  async isNavigationMenuVisible(): Promise<boolean> {
-    return await this.isElementVisible(this.locators.navigationMenu);
+  async selectRandomProduct(): Promise<string> {
+    logStep('selecting a random product from home page');
+    const products = this.page.locator(this.locators.button_products);
+    const count = await products.count();
+    const randomIndex = Math.floor(Math.random() * count);
+    const product = products.nth(randomIndex);
+    const productName = await product.innerText();
+
+    await product.click();
+    return productName;
   }
 
-  /**
-   * Get all feature cards
-   */
-  async getFeatureCards(): Promise<Locator[]> {
-    const cards = this.page.locator(this.locators.featureCards);
-    const count = await cards.count();
-    const cardElements: Locator[] = [];
-    
-    for (let i = 0; i < count; i++) {
-      cardElements.push(cards.nth(i));
-    }
-    
-    return cardElements;
+  async clickCartButton(): Promise<void> {
+    logStep('navigating to cart');
+    await this.page.locator(this.locators.button_Cart).click();
   }
 
-  /**
-   * Get feature card text by index
-   */
-  async getFeatureCardText(index: number): Promise<string> {
-    const cards = await this.getFeatureCards();
-    if (index < cards.length) {
-      return await cards[index].textContent() || '';
-    }
-    throw new Error(`Feature card at index ${index} not found`);
-  }
-
-  /**
-   * Click on feature card by index
-   */
-  async clickFeatureCard(index: number): Promise<void> {
-    logStep(`Clicking feature card at index: ${index}`);
-    const cards = await this.getFeatureCards();
-    if (index < cards.length) {
-      await cards[index].click();
-    } else {
-      throw new Error(`Feature card at index ${index} not found`);
-    }
-  }
-
-  /**
-   * Wait for loading spinner to disappear
-   */
-  async waitForLoadingToComplete(): Promise<void> {
-    logStep('Waiting for loading to complete');
-    try {
-      await this.waitForElement(this.locators.loadingSpinner, 1000);
-      // If spinner is visible, wait for it to disappear
-      await this.page.waitForSelector(this.locators.loadingSpinner, { 
-        state: 'hidden', 
-        timeout: 10000 
-      });
-    } catch {
-      // Spinner might not be present, which is fine
-    }
-  }
-
-  /**
-   * Check if error message is displayed
-   */
-  async isErrorMessageDisplayed(): Promise<boolean> {
-    return await this.isElementVisible(this.locators.errorMessage);
-  }
-
-  /**
-   * Get error message text
-   */
-  async getErrorMessage(): Promise<string> {
-    if (await this.isErrorMessageDisplayed()) {
-      return await this.getElementText(this.locators.errorMessage);
-    }
-    return '';
-  }
-
-  /**
-   * Check if success message is displayed
-   */
-  async isSuccessMessageDisplayed(): Promise<boolean> {
-    return await this.isElementVisible(this.locators.successMessage);
-  }
-
-  /**
-   * Get success message text
-   */
-  async getSuccessMessage(): Promise<string> {
-    if (await this.isSuccessMessageDisplayed()) {
-      return await this.getElementText(this.locators.successMessage);
-    }
-    return '';
-  }
-
-  /**
-   * Scroll to features section
-   */
-  async scrollToFeaturesSection(): Promise<void> {
-    logStep('Scrolling to features section');
-    await this.scrollToElement(this.locators.featuresSection);
-  }
-
-  /**
-   * Scroll to footer
-   */
-  async scrollToFooter(): Promise<void> {
-    logStep('Scrolling to footer');
-    await this.scrollToElement(this.locators.footer);
-  }
-
-  /**
-   * Get footer links count
-   */
-  async getFooterLinksCount(): Promise<number> {
-    const links = this.page.locator(this.locators.footerLinks);
-    return await links.count();
-  }
-
-  /**
-   * Click footer link by index
-   */
-  async clickFooterLink(index: number): Promise<void> {
-    logStep(`Clicking footer link at index: ${index}`);
-    const links = this.page.locator(this.locators.footerLinks);
-    const count = await links.count();
-    
-    if (index < count) {
-      await links.nth(index).click();
-    } else {
-      throw new Error(`Footer link at index ${index} not found`);
-    }
+  async addProductToCart(page: Page): Promise<void> {
+    logStep('adding product to cart');
+    const productPage = new ProductPage(page);
+    const cartPage = new CartPage(page);
+    const selectedProduct = await this.selectRandomProduct();
+    await productPage.addProductToCart();
+    await productPage.acceptConfirmationMessage();
+    await this.clickCartButton();
+    await cartPage.validateProductOnCart(selectedProduct);
   }
 }
